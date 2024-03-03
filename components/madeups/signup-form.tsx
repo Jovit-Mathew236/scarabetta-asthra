@@ -27,6 +27,7 @@ import {
   CardTitle,
 } from "../ui/card";
 import Link from "next/link";
+import useStorage from "../hooks/useStorage";
 
 const FormSchema = z.object({
   name: z.string().min(3, {
@@ -41,6 +42,7 @@ const FormSchema = z.object({
 });
 
 export function SignUpForm() {
+  const { setItem } = useStorage();
   const router = useRouter();
   const [createUserWithEmailAndPassword] =
     useCreateUserWithEmailAndPassword(auth);
@@ -55,7 +57,7 @@ export function SignUpForm() {
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
     const res = await createUserWithEmailAndPassword(data.email, data.password);
     console.log(res);
-    sessionStorage.setItem("user", String(true)); // Convert boolean to string
+    setItem("user", String(true)); // Convert boolean to string
     if (res?.user) {
       updateUser(data.name);
     }

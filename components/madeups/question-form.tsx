@@ -24,15 +24,17 @@ import {
 import { useRouter } from "next/navigation";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "@/lib/firebase/config";
+import useStorage from "../hooks/useStorage";
 
 export function QuestionForm() {
+  const { getItem } = useStorage();
   const router = useRouter();
   const [currentQuestionIndex, setCurrentQuestionIndex] =
     React.useState<number>(0);
   const [score, setScore] = React.useState<number>(0);
 
   const [user] = useAuthState(auth);
-  const userSession = sessionStorage.getItem("user");
+  const userSession = getItem("user");
 
   if (!user && userSession !== "true") {
     router.push("/");
