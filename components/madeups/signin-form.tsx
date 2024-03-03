@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -15,6 +16,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { auth } from "@/lib/firebase/config";
+import { useRouter } from "next/navigation";
 
 const FormSchema = z.object({
   email: z.string().email({
@@ -26,6 +29,8 @@ const FormSchema = z.object({
 });
 
 export function SignInForm() {
+  const router = useRouter();
+  const [signInWithEmailAndPassword] = useSignInWithEmailAndPassword(auth);
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -33,12 +38,14 @@ export function SignInForm() {
       password: "",
     },
   });
-  const onSubmit = (data: z.infer<typeof FormSchema>) => {
-    console.log(data);
+  const onSubmit = async (data: z.infer<typeof FormSchema>) => {
+    const res = await signInWithEmailAndPassword(data.email, data.password);
+    sessionStorage.setItem("user", String(true)); // Convert boolean to string
+    router.push("/treasurehunt");
   };
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <FormField
           control={form.control}
           name="email"
