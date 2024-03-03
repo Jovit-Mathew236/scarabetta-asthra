@@ -42,7 +42,7 @@ export function SignInForm() {
   });
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
     const res = await signInWithEmailAndPassword(data.email, data.password);
-    setItem("user", String(true)); // Convert boolean to string
+    setItem("user", String(true), "session"); // Convert boolean to string
     router.push("/treasurehunt");
   };
   return (

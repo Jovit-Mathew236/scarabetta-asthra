@@ -57,7 +57,7 @@ export function SignUpForm() {
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
     const res = await createUserWithEmailAndPassword(data.email, data.password);
     console.log(res);
-    setItem("user", String(true)); // Convert boolean to string
+    setItem("user", String(true), "session"); // Convert boolean to string
     if (res?.user) {
       updateUser(data.name);
     }

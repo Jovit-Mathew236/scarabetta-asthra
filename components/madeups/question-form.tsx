@@ -34,7 +34,7 @@ export function QuestionForm() {
   const [score, setScore] = React.useState<number>(0);
 
   const [user] = useAuthState(auth);
-  const userSession = getItem("user");
+  const userSession = getItem("user", "session");
 
   if (!user && userSession !== "true") {
     router.push("/");
