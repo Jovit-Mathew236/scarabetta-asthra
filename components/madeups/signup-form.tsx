@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { auth, updateUser } from "@/lib/firebase/config";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next/router";
 import {
   Card,
   CardContent,
