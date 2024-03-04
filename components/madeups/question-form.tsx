@@ -1,5 +1,6 @@
 "use client";
 import * as React from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -21,31 +22,77 @@ import {
   FormLabel,
   FormMessage,
 } from "../ui/form";
-import { useRouter } from "next/router";
-import { useAuthState } from "react-firebase-hooks/auth";
-import { auth } from "@/lib/firebase/config";
-import useStorage from "../hooks/useStorage";
+import { useRouter } from "next/navigation";
+import { auth, db } from "@/lib/firebase/config";
+import {
+  collection,
+  getDocs,
+  CollectionReference,
+  QuerySnapshot,
+  DocumentData,
+  updateDoc,
+} from "firebase/firestore";
+import { onAuthStateChanged } from "firebase/auth";
 
 export function QuestionForm() {
-  const { getItem } = useStorage();
   const router = useRouter();
-  const [currentQuestionIndex, setCurrentQuestionIndex] =
-    React.useState<number>(0);
-  const [score, setScore] = React.useState<number>(0);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
+  const [score, setScore] = useState<number>(0);
+  const [uid, setUid] = useState<string>("");
 
-  const [user] = useAuthState(auth);
-  const userSession = getItem("user", "session");
+  useEffect(() => {
+    const handleInspect = () => {
+      if (currentQuestionIndex === 1) {
+        setCurrentQuestionIndex(currentQuestionIndex + 1);
+      }
+    };
 
-  if (!user && userSession !== "true") {
-    router.push("/");
-  }
+    window.addEventListener("keydown", handleInspect);
 
-  const handleNextQuestion = (answer: string) => {
+    return () => {
+      window.removeEventListener("keydown", handleInspect);
+    };
+  }, [currentQuestionIndex, router]);
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUid(user.uid);
+      } else {
+        router.push("/");
+      }
+    });
+    return unsubscribe;
+  }, []);
+
+  const handleNextQuestion = async (answer?: string) => {
     if (answer === questions.questions[currentQuestionIndex].answer) {
-      setScore(score + 1);
+      setScore(score + 10);
+      // set score in db
+      console.log(score);
+
+      const userCollectionRef: CollectionReference<DocumentData> = collection(
+        db,
+        "user"
+      );
+      const querySnapshot: QuerySnapshot<DocumentData> = await getDocs(
+        userCollectionRef
+      );
+      const userData: DocumentData[] = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      const userDoc = userData.find((localuser) => localuser.uid === uid);
+      console.log(userDoc, uid, userData);
+
+      if (userDoc) {
+        updateDoc(userDoc.id, {
+          score: score,
+        });
+      }
     }
     setCurrentQuestionIndex(currentQuestionIndex + 1);
   };
+
   const FormSchema = z
     .object({
       answer: z.string().nonempty({
@@ -54,7 +101,10 @@ export function QuestionForm() {
     })
     .refine(
       (data) => {
-        if (data.answer !== questions.questions[currentQuestionIndex].answer) {
+        if (
+          data.answer.toLocaleLowerCase() !==
+          questions.questions[currentQuestionIndex].answer
+        ) {
           return false;
         }
         return true;
@@ -71,42 +121,60 @@ export function QuestionForm() {
       answer: "",
     },
   });
+
   const onSubmit = (data: z.infer<typeof FormSchema>) => {
-    if (data.answer === questions.questions[currentQuestionIndex].answer) {
+    if (
+      data.answer.toLocaleLowerCase() ===
+      questions.questions[currentQuestionIndex].answer
+    ) {
       handleNextQuestion(data.answer);
       form.reset();
     }
   };
+
   return (
     <>
+      <a
+        href="localhost:3000/qr"
+        target="_blank"
+        rel="Here is your 3rd door key : url"
+        className="hidden"
+      ></a>
       <Card className="w-[350px]">
         <CardHeader>
           <CardTitle>Door {currentQuestionIndex + 1}</CardTitle>
-          <CardDescription>
-            {questions.questions[currentQuestionIndex].question}
-          </CardDescription>
+          {questions.questions[currentQuestionIndex].question && (
+            <CardDescription>
+              {questions.questions[currentQuestionIndex].question}
+            </CardDescription>
+          )}
         </CardHeader>
         <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-              <FormField
-                control={form.control}
-                name="answer"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Answer</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <Button type="submit" className="w-full">
-                Submit
-              </Button>
-            </form>
-          </Form>
+          {questions.questions[currentQuestionIndex].answer && (
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-8"
+              >
+                <FormField
+                  control={form.control}
+                  name="answer"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Answer</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <Button type="submit" className="w-full">
+                  Submit
+                </Button>
+              </form>
+            </Form>
+          )}
         </CardContent>
       </Card>
     </>

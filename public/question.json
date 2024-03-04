@@ -1,20 +1,20 @@
 {
     "questions": [
         {
-            "question": "What is the scientific name of a butterfly?",
-            "answer": "Rhopalocera"
+            "question": "I’m a mysterious container, holding data and secrets. Developers often whisper my name in hushed tones. What am I?",
+            "answer": "database"
         },
         {
-            "question": "How hot is the surface of the sun?",
-            "answer": "5,778 K"
+            "question": "I’m a markup magician, shaping content with tags. My syntax is angled, and I nest within myself. What am I?",
+            "answer": ""
         },
         {
-            "question": "Who are the actors in The Internship?",
-            "answer": "Vince Vaughn, Owen Wilson"
+            "question": "",
+            "answer": "location"
         },
         {
-            "question": "What is the capital of Spain?",
-            "answer": "Madrid"
+            "question": "105 109 103 117 114 . 99 111 109 / 97 / 51 70 80 56 84 122 109",
+            "answer": "altronica"
         },
         {
             "question": "What are the school colors of the University of Texas at Austin?",
@@ -31,14 +31,6 @@
         {
             "question": "How far is the moon from Earth?",
             "answer": "238,400 miles (384,400 km)"
-        },
-        {
-            "question": "What is 65 times 52?",
-            "answer": "3380"
-        },
-        {
-            "question": "How tall is Mount Everest?",
-            "answer": "29,029 ft (8,847 m)"
         }
     ]
 }

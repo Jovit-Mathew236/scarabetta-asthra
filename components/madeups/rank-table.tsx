@@ -1,3 +1,6 @@
+"use client";
+import { useState, useEffect } from "react";
+import { db } from "@/lib/firebase/config";
 import {
   Table,
   TableBody,
@@ -7,71 +10,64 @@ import {
   TableHeader,
   TableRow,
 } from "../ui/table";
-
-const data = [
-  {
-    rank: "1",
-    status: "Finished",
-    name: "User 1",
-    time: "10",
-  },
-  {
-    rank: "2",
-    status: "Finished",
-    name: "User 2",
-    time: "20",
-  },
-  {
-    rank: "3",
-    status: "Ongoing",
-    name: "User 3",
-    time: "30",
-  },
-  {
-    rank: "4",
-    status: "Ongoing",
-    name: "User 4",
-    time: "140",
-  },
-  {
-    rank: "5",
-    status: "Started",
-    name: "User 5",
-    time: "50",
-  },
-  {
-    rank: "6",
-    status: "Started",
-    name: "User 6",
-    time: "60",
-  },
-  {
-    rank: "7",
-    status: "Joined",
-    name: "User 7",
-    time: "40",
-  },
-];
+import {
+  collection,
+  getDocs,
+  CollectionReference,
+  QuerySnapshot,
+  DocumentData,
+} from "firebase/firestore";
 
 export function RankTable() {
+  const [userData, setUserData] = useState<DocumentData[]>([]);
+
+  useEffect(() => {
+    const fetchData = async (): Promise<void> => {
+      try {
+        const userCollectionRef: CollectionReference<DocumentData> = collection(
+          db,
+          "user"
+        );
+        const querySnapshot: QuerySnapshot<DocumentData> = await getDocs(
+          userCollectionRef
+        );
+
+        const userData: DocumentData[] = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+
+        setUserData(userData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   return (
     <Table>
       <TableCaption>Rank List</TableCaption>
       <TableHeader>
         <TableRow>
           <TableHead className="w-[100px]">Rank</TableHead>
-          <TableHead>Status</TableHead>
           <TableHead>Name</TableHead>
+          <TableHead>Email</TableHead>
+          <TableHead>Status</TableHead>
+          <TableHead>Score</TableHead>
           <TableHead className="text-right">Time</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
-        {data.map((rank) => (
-          <TableRow key={rank.rank}>
-            <TableCell className="font-medium">{rank.rank}</TableCell>
-            <TableCell>{rank.status}</TableCell>
-            <TableCell>{rank.name}</TableCell>
-            <TableCell className="text-right">{rank.time} min</TableCell>
+        {userData.map((user: any) => (
+          <TableRow key={user.rank}>
+            <TableCell className="font-medium">{user.rank}</TableCell>
+            <TableCell>{user.name}</TableCell>
+            <TableCell>{user.email}</TableCell>
+            <TableCell>{user.status}</TableCell>
+            <TableCell>{user.score}</TableCell>
+            <TableCell className="text-right">{user.time} min</TableCell>
           </TableRow>
         ))}
       </TableBody>

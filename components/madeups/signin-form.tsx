@@ -17,8 +17,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { auth } from "@/lib/firebase/config";
-import { useRouter } from "next/router";
-import useStorage from "../hooks/useStorage";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 const FormSchema = z.object({
   email: z.string().email({
@@ -30,7 +30,6 @@ const FormSchema = z.object({
 });
 
 export function SignInForm() {
-  const { setItem } = useStorage();
   const router = useRouter();
   const [signInWithEmailAndPassword] = useSignInWithEmailAndPassword(auth);
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -40,9 +39,16 @@ export function SignInForm() {
       password: "",
     },
   });
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        router.push("/treasurehunt");
+      }
+    });
+    return unsubscribe;
+  }, [router]);
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
     const res = await signInWithEmailAndPassword(data.email, data.password);
-    setItem("user", String(true), "session"); // Convert boolean to string
     router.push("/treasurehunt");
   };
   return (
@@ -77,7 +83,7 @@ export function SignInForm() {
             </FormItem>
           )}
         />
-        <Button type="submit">Submit</Button>
+        <Button type="submit">Start</Button>
       </form>
     </Form>
   );

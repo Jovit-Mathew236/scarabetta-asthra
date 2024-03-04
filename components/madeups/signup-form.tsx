@@ -16,8 +16,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { auth, updateUser } from "@/lib/firebase/config";
-import { useRouter } from "next/router";
+import { auth, db, updateUser } from "@/lib/firebase/config";
+import { useRouter } from "next/navigation";
 import {
   Card,
   CardContent,
@@ -27,7 +27,15 @@ import {
   CardTitle,
 } from "../ui/card";
 import Link from "next/link";
-import useStorage from "../hooks/useStorage";
+import {
+  collection,
+  getDocs,
+  CollectionReference,
+  QuerySnapshot,
+  DocumentData,
+  addDoc,
+} from "firebase/firestore";
+import { useEffect } from "react";
 
 const FormSchema = z.object({
   name: z.string().min(3, {
@@ -42,7 +50,6 @@ const FormSchema = z.object({
 });
 
 export function SignUpForm() {
-  const { setItem } = useStorage();
   const router = useRouter();
   const [createUserWithEmailAndPassword] =
     useCreateUserWithEmailAndPassword(auth);
@@ -54,13 +61,34 @@ export function SignUpForm() {
       password: "",
     },
   });
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        router.push("/treasurehunt");
+      }
+    });
+    return unsubscribe;
+  }, [router]);
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
     const res = await createUserWithEmailAndPassword(data.email, data.password);
     console.log(res);
-    setItem("user", String(true), "session"); // Convert boolean to string
     if (res?.user) {
       updateUser(data.name);
     }
+    // add data to user collection
+    const userCollectionRef: CollectionReference<DocumentData> = collection(
+      db,
+      "user"
+    );
+    await addDoc(userCollectionRef, {
+      uid: res?.user.uid,
+      name: data.name,
+      email: data.email,
+      status: "Joined",
+      time: "00:00:00",
+      rank: 0,
+      score: 0,
+    });
     router.push("/treasurehunt");
   };
   return (
@@ -115,7 +143,7 @@ export function SignUpForm() {
               )}
             />
             <div className="flex justify-between">
-              <Button type="submit">Submit</Button>
+              <Button type="submit">Join</Button>
               <Button variant="link" asChild>
                 <Link href="/signin">Sign in</Link>
               </Button>
