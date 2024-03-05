@@ -16,6 +16,8 @@ import {
   CollectionReference,
   QuerySnapshot,
   DocumentData,
+  orderBy,
+  query,
 } from "firebase/firestore";
 
 export function RankTable() {
@@ -28,10 +30,8 @@ export function RankTable() {
           db,
           "user"
         );
-        const querySnapshot: QuerySnapshot<DocumentData> = await getDocs(
-          userCollectionRef
-        );
-
+        const q = query(userCollectionRef, orderBy("score", "desc"));
+        const querySnapshot: QuerySnapshot<DocumentData> = await getDocs(q);
         const userData: DocumentData[] = querySnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
@@ -60,9 +60,9 @@ export function RankTable() {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {userData.map((user: any) => (
-          <TableRow key={user.rank}>
-            <TableCell className="font-medium">{user.rank}</TableCell>
+        {userData.map((user: any, i) => (
+          <TableRow key={i}>
+            <TableCell className="font-medium">{i + 1}</TableCell>
             <TableCell>{user.name}</TableCell>
             <TableCell>{user.email}</TableCell>
             <TableCell>{user.status}</TableCell>

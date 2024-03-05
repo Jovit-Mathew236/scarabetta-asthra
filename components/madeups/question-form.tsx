@@ -31,6 +31,7 @@ import {
   QuerySnapshot,
   DocumentData,
   updateDoc,
+  doc,
 } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 
@@ -47,12 +48,17 @@ export function QuestionForm() {
       }
     };
 
-    window.addEventListener("keydown", handleInspect);
+    const onBlurHandler = () => {
+      handleInspect();
+    };
+
+    window.addEventListener("blur", onBlurHandler);
 
     return () => {
-      window.removeEventListener("keydown", handleInspect);
+      window.removeEventListener("blur", onBlurHandler);
     };
-  }, [currentQuestionIndex, router]);
+  }, [currentQuestionIndex]);
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -62,7 +68,7 @@ export function QuestionForm() {
       }
     });
     return unsubscribe;
-  }, []);
+  }, [router]);
 
   const handleNextQuestion = async (answer?: string) => {
     if (answer === questions.questions[currentQuestionIndex].answer) {
@@ -82,10 +88,9 @@ export function QuestionForm() {
         ...doc.data(),
       }));
       const userDoc = userData.find((localuser) => localuser.uid === uid);
-      console.log(userDoc, uid, userData);
-
+      const docRef = doc(db, "user", userDoc?.id);
       if (userDoc) {
-        updateDoc(userDoc.id, {
+        updateDoc(docRef, {
           score: score,
         });
       }
