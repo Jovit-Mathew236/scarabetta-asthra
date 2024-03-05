@@ -10,15 +10,16 @@
         },
         {
             "question": "",
-            "answer": "location"
+            "answer": "silchar"
         },
         {
             "question": "105 109 103 117 114 . 99 111 109 / 97 / 51 70 80 56 84 122 109",
             "answer": "altronica"
         },
         {
-            "question": "What are the school colors of the University of Texas at Austin?",
-            "answer": "White, Burnt Orange"
+            "question": "https://github.com/HaleemMuhsin/Scarbetta-709/blob/main/test2.py",
+            "answer": "freedom",
+            "link": "https://github.com/HaleemMuhsin/Scarbetta-709/blob/main/Frame%202.png?raw=true"
         },
         {
             "question": "What is 70 degrees Fahrenheit in Celsius?",

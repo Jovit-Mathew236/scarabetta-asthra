@@ -34,6 +34,7 @@ import {
   doc,
 } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
+import Image from "next/image";
 
 export function QuestionForm() {
   const router = useRouter();
@@ -168,6 +169,14 @@ export function QuestionForm() {
             <CardDescription>
               {questions.questions[currentQuestionIndex].question}
             </CardDescription>
+          )}
+          {questions.questions[currentQuestionIndex].link && (
+            <Image
+              src="https://github.com/HaleemMuhsin/Scarbetta-709/blob/main/Frame%202.png?raw=true"
+              width={1000}
+              height={1000}
+              alt="layout"
+            />
           )}
         </CardHeader>
         <CardContent>
