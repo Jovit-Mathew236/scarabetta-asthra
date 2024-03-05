@@ -54,8 +54,21 @@ export function QuestionForm() {
 
     window.addEventListener("blur", onBlurHandler);
 
+    // Add event listener for beforeunload
+    const onConfirmRefresh = function (event: any) {
+      if (currentQuestionIndex !== 7) {
+        event.preventDefault();
+        event.returnValue = "Are you sure you want to leave the page?";
+      }
+    };
+
+    window.addEventListener("beforeunload", onConfirmRefresh, {
+      capture: true,
+    });
+
     return () => {
       window.removeEventListener("blur", onBlurHandler);
+      window.removeEventListener("beforeunload", onConfirmRefresh);
     };
   }, [currentQuestionIndex]);
 
@@ -143,7 +156,7 @@ export function QuestionForm() {
   return (
     <>
       <a
-        href="localhost:3000/qr"
+        href="/qr"
         target="_blank"
         rel="Here is your 3rd door key : url"
         className="hidden"
