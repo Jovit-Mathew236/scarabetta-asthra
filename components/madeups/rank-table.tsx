@@ -12,39 +12,32 @@ import {
 } from "../ui/table";
 import {
   collection,
-  getDocs,
-  CollectionReference,
-  QuerySnapshot,
-  DocumentData,
-  orderBy,
+  onSnapshot, // Import onSnapshot
   query,
+  orderBy,
+  DocumentData,
 } from "firebase/firestore";
 
 export function RankTable() {
   const [userData, setUserData] = useState<DocumentData[]>([]);
 
   useEffect(() => {
-    const fetchData = async (): Promise<void> => {
-      try {
-        const userCollectionRef: CollectionReference<DocumentData> = collection(
-          db,
-          "user"
-        );
-        const q = query(userCollectionRef, orderBy("score", "desc"));
-        const querySnapshot: QuerySnapshot<DocumentData> = await getDocs(q);
-        const userData: DocumentData[] = querySnapshot.docs.map((doc) => ({
+    const userCollectionRef = collection(db, "user");
+    const q = query(userCollectionRef, orderBy("score", "desc"));
+
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const newData: DocumentData[] = [];
+      querySnapshot.forEach((doc) => {
+        newData.push({
           id: doc.id,
           ...doc.data(),
-        }));
+        });
+      });
+      setUserData(newData);
+    });
 
-        setUserData(userData);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
-    fetchData();
-  }, []);
+    return () => unsubscribe(); // Unsubscribe from the snapshot listener when component unmounts
+  }, []); // Run effect only once when component mounts
 
   return (
     <Table>
@@ -61,13 +54,13 @@ export function RankTable() {
       </TableHeader>
       <TableBody>
         {userData.map((user: any, i) => (
-          <TableRow key={i}>
+          <TableRow key={user.id}>
             <TableCell className="font-medium">{i + 1}</TableCell>
             <TableCell>{user.name}</TableCell>
             <TableCell>{user.email}</TableCell>
             <TableCell>{user.status}</TableCell>
             <TableCell>{user.score}</TableCell>
-            <TableCell className="text-right">{user.time} min</TableCell>
+            <TableCell className="text-right">{user.time}</TableCell>
           </TableRow>
         ))}
       </TableBody>

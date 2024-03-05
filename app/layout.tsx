@@ -5,6 +5,7 @@ import "cal-sans";
 
 import { ThemeProvider } from "@/components/theme-provider";
 import TopNav from "@/components/madeups/top-nav";
+import { TimerProvider } from "@/components/context/timerContext";
 
 export const metadata = {
   title: "SCARABETTA 709",
@@ -21,15 +22,17 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <TopNav />
-          {children}
-        </ThemeProvider>
+        <TimerProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <TopNav />
+            {children}
+          </ThemeProvider>
+        </TimerProvider>
       </body>
     </html>
   );

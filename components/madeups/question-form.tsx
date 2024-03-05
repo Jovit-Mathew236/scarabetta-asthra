@@ -36,12 +36,15 @@ import {
 import { onAuthStateChanged } from "firebase/auth";
 import Image from "next/image";
 import Cookie from "./cookie";
+import { TimerContext } from "../context/timerContext";
+import { formatTime } from "@/lib/formatTime";
 
 export function QuestionForm() {
   const router = useRouter();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
   const [score, setScore] = useState<number>(10);
   const [uid, setUid] = useState<string>("");
+  const { counter } = React.useContext(TimerContext);
 
   useEffect(() => {
     const handleInspect = () => {
@@ -111,7 +114,8 @@ export function QuestionForm() {
       if (userDoc) {
         updateDoc(docRef, {
           score: score,
-          status: "On Going",
+          status: currentQuestionIndex < 6 ? "On Going" : "Completed",
+          time: formatTime(counter),
         });
       }
     }
@@ -156,9 +160,9 @@ export function QuestionForm() {
         router.push("/rank");
       } else {
         handleNextQuestion(data.answer.toLocaleLowerCase());
+        form.reset();
       }
       // setScore((prevScore) => prevScore + 10);
-      form.reset();
     }
   };
 
