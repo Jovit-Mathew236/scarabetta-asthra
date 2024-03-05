@@ -35,6 +35,7 @@ import {
 } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 import Image from "next/image";
+import Cookie from "./cookie";
 
 export function QuestionForm() {
   const router = useRouter();
@@ -88,8 +89,11 @@ export function QuestionForm() {
     if (answer === questions.questions[currentQuestionIndex].answer) {
       setScore((prevScore) => prevScore + 10);
 
+      if (currentQuestionIndex === 4) {
+        Cookie();
+      }
       // set score in db
-      console.log(score);
+      // console.log(score);
 
       const userCollectionRef: CollectionReference<DocumentData> = collection(
         db,
@@ -148,7 +152,11 @@ export function QuestionForm() {
       data.answer.toLocaleLowerCase() ===
       questions.questions[currentQuestionIndex].answer
     ) {
-      handleNextQuestion(data.answer.toLocaleLowerCase());
+      if (currentQuestionIndex === 7) {
+        router.push("/rank");
+      } else {
+        handleNextQuestion(data.answer.toLocaleLowerCase());
+      }
       // setScore((prevScore) => prevScore + 10);
       form.reset();
     }
@@ -156,12 +164,48 @@ export function QuestionForm() {
 
   return (
     <>
-      <a
-        href="/qr"
-        target="_blank"
-        rel="Here is your 3rd door key : url"
-        className="hidden"
-      ></a>
+      {currentQuestionIndex === 2 && (
+        <a
+          href="/qr"
+          target="_blank"
+          rel="Here is your 3rd door key : url"
+          className="hidden"
+        ></a>
+      )}
+      {currentQuestionIndex === 6 && (
+        <>
+          <div className="flex h-[200px]">
+            <Image
+              src="https://github.com/HaleemMuhsin/Scarbetta-709/blob/main/Young_Kurt_G%C3%B6del_as_a_student_in_1925.jpg?raw=true"
+              width={200}
+              height={200}
+              alt="layout"
+              className="object-cover"
+            />
+            <Image
+              src="https://github.com/HaleemMuhsin/Scarbetta-709/blob/main/Maurits_Cornelis_Escher.jpg?raw=true"
+              width={200}
+              height={200}
+              alt="layout"
+              className="object-cover"
+            />
+            <Image
+              src="https://github.com/HaleemMuhsin/Scarbetta-709/blob/main/Johann_Sebastian_Bach.jpg?raw=true"
+              width={200}
+              height={200}
+              alt="layout"
+              className="object-cover"
+            />
+          </div>
+          <Image
+            src="https://github.com/HaleemMuhsin/Scarbetta-709/blob/main/360_F_670629689_SBpYkQnNNloYddLvF9QqyiJZGXaW0RLl.jpg?raw=true"
+            width={200}
+            height={200}
+            alt="layout"
+            className="object-cover"
+          />
+        </>
+      )}
       <Card className="w-[350px]">
         <CardHeader>
           <CardTitle>Door {currentQuestionIndex + 1}</CardTitle>
@@ -172,10 +216,10 @@ export function QuestionForm() {
           )}
           {questions.questions[currentQuestionIndex].link && (
             <Image
-              src="https://github.com/HaleemMuhsin/Scarbetta-709/blob/main/Frame%202.png?raw=true"
+              src={questions.questions[currentQuestionIndex].link ?? ""}
               width={1000}
               height={1000}
-              alt="layout"
+              alt={questions.questions[currentQuestionIndex].alt ?? ""}
             />
           )}
         </CardHeader>

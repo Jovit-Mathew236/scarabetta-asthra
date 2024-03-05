@@ -68,7 +68,10 @@ const TopNav = () => {
         </DropdownMenu>
 
         {user && pathname === "/treasurehunt" && (
-          <Badge variant="destructive" className="h-full">
+          <Badge
+            variant="destructive"
+            className="h-full self-center align-middle"
+          >
             {formatTime(counter)}
           </Badge>
         )}

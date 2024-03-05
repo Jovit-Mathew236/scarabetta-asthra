@@ -19,19 +19,22 @@
         {
             "question": "https://github.com/HaleemMuhsin/Scarbetta-709/blob/main/test2.py",
             "answer": "freedom",
-            "link": "https://github.com/HaleemMuhsin/Scarbetta-709/blob/main/Frame%202.png?raw=true"
+            "link": "https://github.com/HaleemMuhsin/Scarbetta-709/blob/main/Frame%202.png?raw=true",
+            "alt": "layout"
         },
         {
-            "question": "What is 70 degrees Fahrenheit in Celsius?",
-            "answer": "21.1111"
+            "question": "",
+            "answer": "cookie",
+            "link": "https://github.com/HaleemMuhsin/Scarbetta-709/blob/main/2ChocolateChipCookies.jpg?raw=true",
+            "alt": "https://www.youtube.com/watch?v=rdVPflECed8"
         },
         {
-            "question": "When was Mahatma Gandhi born?",
-            "answer": "October 2, 1869"
+            "question": "an Eternal Golden Braid",
+            "answer": "metamorphosis"
         },
         {
-            "question": "How far is the moon from Earth?",
-            "answer": "238,400 miles (384,400 km)"
+            "question": "100,102,99,103,101,104,100",
+            "answer": "709"
         }
     ]
 }
