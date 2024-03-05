@@ -45,6 +45,32 @@ export function QuestionForm() {
   const [score, setScore] = useState<number>(10);
   const [uid, setUid] = useState<string>("");
   const { counter } = React.useContext(TimerContext);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const userCollectionRef: CollectionReference<DocumentData> = collection(
+          db,
+          "user"
+        );
+        const querySnapshot: QuerySnapshot<DocumentData> = await getDocs(
+          userCollectionRef
+        );
+        const userData: DocumentData[] = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        const userDoc = userData.find((localuser) => localuser.uid === uid);
+        const docRef = doc(db, "user", userDoc?.id);
+        if (userDoc) {
+          userDoc.status === "Completed" && router.push("/rank");
+        }
+      } catch (error) {
+        console.error("Error updating document:", error);
+      }
+    };
+
+    fetchData(); // Call the inner function
+  }, [currentQuestionIndex, counter, uid, router]); // Empty dependency array means it will only run once, like componentDidMount
 
   useEffect(() => {
     const handleInspect = () => {
