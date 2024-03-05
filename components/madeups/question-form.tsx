@@ -38,7 +38,7 @@ import { onAuthStateChanged } from "firebase/auth";
 export function QuestionForm() {
   const router = useRouter();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
-  const [score, setScore] = useState<number>(0);
+  const [score, setScore] = useState<number>(10);
   const [uid, setUid] = useState<string>("");
 
   useEffect(() => {
@@ -72,7 +72,8 @@ export function QuestionForm() {
 
   const handleNextQuestion = async (answer?: string) => {
     if (answer === questions.questions[currentQuestionIndex].answer) {
-      setScore(score + 10);
+      setScore((prevScore) => prevScore + 10);
+
       // set score in db
       console.log(score);
 
@@ -92,6 +93,7 @@ export function QuestionForm() {
       if (userDoc) {
         updateDoc(docRef, {
           score: score,
+          status: "On Going",
         });
       }
     }
@@ -132,7 +134,8 @@ export function QuestionForm() {
       data.answer.toLocaleLowerCase() ===
       questions.questions[currentQuestionIndex].answer
     ) {
-      handleNextQuestion(data.answer);
+      handleNextQuestion(data.answer.toLocaleLowerCase());
+      // setScore((prevScore) => prevScore + 10);
       form.reset();
     }
   };
