@@ -37,40 +37,46 @@ const TopNav = () => {
 
   return (
     <div className="fixed top-10 left-0 z-50 w-full">
-      <div className="m-auto flex justify-between  w-11/12  print:hidden">
-        <DropdownMenu>
-          <DropdownMenuTrigger>
-            <Badge variant="secondary" className="h-full">
-              Hi {userName}
-            </Badge>
-          </DropdownMenuTrigger>
-          {user && (
-            <DropdownMenuContent>
-              <DropdownMenuItem>
-                <Button
-                  variant="ghost"
-                  onClick={() => {
-                    signOut(auth);
-                    router.push("/");
-                  }}
-                  className="h-4"
-                >
-                  SignOut
-                </Button>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          )}
-        </DropdownMenu>
+      <div className="m-auto flex justify-between items-stretch  w-11/12  print:hidden">
+        <div className="w-[33.3%] flex">
+          <DropdownMenu>
+            <DropdownMenuTrigger>
+              <Badge variant="secondary" className="h-full">
+                Hi {userName}
+              </Badge>
+            </DropdownMenuTrigger>
+            {user && (
+              <DropdownMenuContent>
+                <DropdownMenuItem>
+                  <Button
+                    variant="ghost"
+                    onClick={() => {
+                      signOut(auth);
+                      router.push("/");
+                    }}
+                    className="h-4"
+                  >
+                    SignOut
+                  </Button>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            )}
+          </DropdownMenu>
+        </div>
 
         {user && pathname === "/treasurehunt" && (
-          <Badge
-            variant="destructive"
-            className="h-full self-center align-middle"
-          >
-            {formatTime(counter)}
-          </Badge>
+          <div className="w-[33.3%] flex justify-center">
+            <Badge
+              variant="destructive"
+              className="h-full self-center align-middle"
+            >
+              {formatTime(counter)}
+            </Badge>
+          </div>
         )}
-        <ModeToggle />
+        <div className="w-[33.3%] flex justify-end">
+          <ModeToggle />
+        </div>
       </div>
     </div>
   );
